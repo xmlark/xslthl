@@ -6,6 +6,9 @@ import org.w3c.dom.*;
 
 class Config {
 	
+	public String prefix = "";
+	public String uri = "";
+	
 	private static Config instance = null;
 	private Map<String, MainHighlighter> highlighters = new HashMap<String, MainHighlighter>();
 	
@@ -88,7 +91,13 @@ class Config {
 					System.out.println(" error");
 				}
 			}
-		}		
+			NodeList prefixNode = doc.getDocumentElement().getElementsByTagName("namespace");
+			if (prefixNode.getLength() == 1) {
+			  Element e = (Element) prefixNode.item(0);
+				prefix = e.getAttribute("prefix");
+				uri = e.getAttribute("uri");
+			}
+		}
 		catch (Exception e) {
 			System.err.println("XSLT Highlighter: Cannot read xslthl-config.xml, no custom highlighter will be available.\n");
 		}

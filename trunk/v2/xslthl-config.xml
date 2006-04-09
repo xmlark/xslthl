@@ -14,5 +14,6 @@
   <highlighter id='ini'    file='highlighters/ini-hl.xml'   />
   <highlighter id='php'    file='highlighters/php-hl.xml'   />
   <highlighter id='myxml'  file='highlighters/myxml-hl.xml' />
-  <highlighter id='m2'     file='highlighters/m2-hl.xml' />
+  <highlighter id='m2'     file='highlighters/m2-hl.xml'    />
+  <namespace prefix="xslthl" uri="http://xslthl.sf.net" />
 </xslthl-config>
