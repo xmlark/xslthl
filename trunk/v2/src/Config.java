@@ -1,5 +1,9 @@
 package net.sf.xslthl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.net.URL;
 import java.util.*;
 import javax.xml.parsers.*;
 import org.w3c.dom.*;
@@ -72,15 +76,20 @@ class Config {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 			DocumentBuilder builder = dbf.newDocumentBuilder();
-			Document doc = builder.parse("xslthl-config.xml");
+                        String configFilename = "xslthl-config.xml";
+                        if (System.getProperty("xslthl.config") != null)                            
+                            configFilename = System.getProperty("xslthl.config");                        
+                        System.out.println("Loading configuration from " + configFilename + "...");
+			Document doc = builder.parse(configFilename);
 			NodeList hls = doc.getDocumentElement().getElementsByTagName("highlighter");
 			for (int i = 0; i < hls.getLength(); i++) {
 				Element hl = (Element) hls.item(i);
 				String id = hl.getAttribute("id");
 				String filename = hl.getAttribute("file");
-				System.out.print("Loading " + id + " highligter...");
+                                String absFilename = new URL(new URL(configFilename), filename).toString();
+				System.out.print("Loading " + id + " highligter from " + absFilename +"...");
 				try {
-					MainHighlighter old = highlighters.put(id, loadHl(filename));
+					MainHighlighter old = highlighters.put(id, loadHl(absFilename));
 					if (old != null) {
 						System.out.println(" Warning: highlighter with such id already existed!");
 					} else {
