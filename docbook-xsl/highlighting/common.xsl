@@ -8,9 +8,11 @@
 		xmlns:saxon6="http://icl.com/saxon" 
 		xmlns:saxonb="http://saxon.sf.net/" 
 		xmlns:xalan="http://xml.apache.org/xalan"
-                xmlns:exsl="http://exslt.org/common"
-		exclude-result-prefixes="exsl d s6hl sbhl xhl"
-                version='1.0'>
+		
+		xmlns:exsl="http://exslt.org/common"
+		xmlns:xslthl="http://xslthl.sf.net"
+		exclude-result-prefixes="exsl d xslthl s6hl sbhl xhl"
+		version='1.0'>
 
 <!-- ********************************************************************
      $Id: common.xsl 7266 2007-08-22 11:58:42Z xmldoc $
@@ -50,6 +52,15 @@
       <xsl:value-of select="$highlight.default.language"/>
     </xsl:when>
   </xsl:choose>
+</xsl:template>
+
+<!-- a fallback when the specific style isn't recognized -->
+<xsl:template match="xslthl:*">
+  <xsl:message>
+    <xsl:text>unprocessed xslthl style: </xsl:text>
+    <xsl:value-of select="local-name(.)" />
+  </xsl:message>
+  <xsl:value-of select="." />
 </xsl:template>
 
 <xsl:template name="apply-highlighting">
