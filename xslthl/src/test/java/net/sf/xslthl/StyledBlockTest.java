@@ -217,4 +217,18 @@ public class StyledBlockTest {
 		        blocks.toString());
 	}
 
+	/**
+	 * Guard against cases in which the attribute value is missing.
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testXMLHighlighterCaseSIOBWhenAttributeValueMissing() throws Exception {
+		XMLHighlighter hl = new XMLHighlighter();
+		ArrayList<Block> blocks = new ArrayList<Block>();
+		hl.highlight(new CharIter("<xsl:for-each-group select ="), blocks);
+		assertEquals(
+		        "[, <tag><xsl:for-each-group</tag>,  , <attribute>select</attribute>,  =, <value></value>]",
+		        blocks.toString());
+	}
 }

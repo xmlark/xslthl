@@ -186,8 +186,9 @@ public class XMLHighlighter extends WholeHighlighter {
 					in.moveNext();
 				}
 				out.add(in.markedToBlock());
-				if (XMLHighlighter.QUOTE.equals(in.current())
-				        || XMLHighlighter.APOSTROPHE.equals(in.current())) {
+				if (! in.finished() 
+						&& (XMLHighlighter.QUOTE.equals(in.current()) 
+								|| XMLHighlighter.APOSTROPHE.equals(in.current()))) {
 					Character boundary = in.current();
 					in.moveNext();
 					while (!in.finished() && !boundary.equals(in.current())) {
