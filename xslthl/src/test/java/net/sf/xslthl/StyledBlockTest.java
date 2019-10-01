@@ -231,4 +231,23 @@ public class StyledBlockTest {
 		        "[, <tag><xsl:for-each-group</tag>,  , <attribute>select</attribute>,  =, <value></value>]",
 		        blocks.toString());
 	}
+	
+	/**
+	 * Guard against cases in which the Java code is incomplete
+	 * 
+	 * @throws Exception
+	 */
+	@Test
+	public void testJavaHighlighterCaseSIOBWhenEverythingMissing() throws Exception {
+		Config c = Config
+		        .getInstance(new File("highlighters/xslthl-config.xml").toURI()
+		                .toString());
+		MainHighlighter hl = c.getMainHighlighter("java");
+		List<Block> blocks = new ArrayList<Block>();
+		blocks = hl.highlight("@");
+		assertEquals(
+		        "[@]",
+		        blocks.toString());
+
+	}
 }

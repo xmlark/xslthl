@@ -63,8 +63,13 @@ public class AnnotationHighlighter extends Highlighter {
 	 */
 	@Override
 	public boolean startsWith(CharIter in) {
-		if (in.startsWith(start)) {
-			return Character.isJavaIdentifierStart(in.next(start.length()));
+		if (!in.finished() && in.startsWith(start)) {
+			if(! in.finished()) {
+				Character next = in.next(start.length());
+				if(next != null) {
+					return Character.isJavaIdentifierStart(next);
+				}
+			}
 		}
 		return false;
 	}
