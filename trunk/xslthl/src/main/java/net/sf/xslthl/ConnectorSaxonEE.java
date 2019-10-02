@@ -31,6 +31,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.expr.XPathContext;
@@ -46,8 +48,13 @@ import net.sf.saxon.type.Type;
  * connectors with the older Saxon library.
  */
 public class ConnectorSaxonEE {
+	
+	/**
+	 * The logging facility
+	 */
+	private static Logger logger = Logger.getLogger("net.sf.xslthl.saxon9eeconnector");
 
-	private static void blockToSaxon6Node(Block b, Builder builder,
+	private static void blockToSaxon9Node(Block b, Builder builder,
 	        Config config) throws Exception {
 		if (b.isStyled()) {
 			// int elemId = pool.allocate(config.prefix, config.uri,
@@ -189,31 +196,38 @@ public class ConnectorSaxonEE {
 							NodeInfo n2i = (NodeInfo) itm2;
 							if (n2i.getNodeKind() == Type.TEXT) {
 								if (hl != null) {
-									Builder builder = context.getController()
-									        .makeBuilder();
-									builder.open();
-									builder.startDocument(0);
-									List<Block> l = hl.highlight(n2i
-									        .getStringValue());
-									for (Block b : l) {
-										blockToSaxon6Node(b, builder, c);
-									}
-									builder.endDocument();
-									builder.close();
-									NodeInfo doc = builder.getCurrentRoot();
+									try {
+										Builder builder = context.getController()
+												.makeBuilder();
+										builder.open();
+										builder.startDocument(0);
+										List<Block> l = hl.highlight(n2i
+												.getStringValue());
+										for (Block b : l) {
+											blockToSaxon9Node(b, builder, c);
+										}
+										builder.endDocument();
+										builder.close();
+										NodeInfo doc = builder.getCurrentRoot();
 
-									Object elms = iterateAxis
-									        .invoke(doc,
-									                new Object[] {
-									                        childType,
-									                        net.sf.saxon.pattern.AnyNodeTest
-									                                .getInstance() });
-									// Object elms =
-									// doc.iterateAxis(childType,net.sf.saxon.pattern.AnyNodeTest);
-									Item crt = null;
-									while ((crt = (Item) next.invoke(elms,
-									        new Object[0])) != null) {
-										resultNodes.add(crt);
+										Object elms = iterateAxis
+												.invoke(doc,
+														new Object[] {
+																childType,
+																net.sf.saxon.pattern.AnyNodeTest
+																.getInstance() });
+										// Object elms =
+												// doc.iterateAxis(childType,net.sf.saxon.pattern.AnyNodeTest);
+										Item crt = null;
+										while ((crt = (Item) next.invoke(elms,
+												new Object[0])) != null) {
+											resultNodes.add(crt);
+										}
+									} catch(Exception ex) {
+										logger.log(Level.SEVERE, String.format(
+												"Highligher threw unhandled error at position %s: %s", n2i.getStringValue(),
+												ex.getMessage()), ex);
+										resultNodes.add(n2i); // No highlighting, but visible at least
 									}
 								} else {
 									resultNodes.add(n2i);

@@ -27,6 +27,8 @@ package net.sf.xslthl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.sf.saxon.event.Builder;
 import net.sf.saxon.expr.XPathContext;
@@ -44,8 +46,12 @@ import net.sf.saxon.type.Type;
  * A new saxon connector to be used with saxon 8.5 and later.
  */
 public class ConnectorSaxonB {
-
-	private static void blockToSaxon6Node(Block b, Builder builder,
+	/**
+	 * The logging facility
+	 */
+	private static Logger logger = Logger.getLogger("net.sf.xslthl.saxon9Bconnector");
+	
+	private static void blockToSaxon9Node(Block b, Builder builder,
 	        NamePool pool, Config config) throws Exception {
 		if (b.isStyled()) {
 			int elemId = pool.allocate(config.prefix, config.uri,
@@ -104,23 +110,30 @@ public class ConnectorSaxonB {
 							NodeInfo n2i = (NodeInfo) itm2;
 							if (n2i.getNodeKind() == Type.TEXT) {
 								if (hl != null) {
-									Builder builder = context.getController()
-									        .makeBuilder();
-									builder.open();
-									builder.startDocument(0);
-									List<Block> l = hl.highlight(n2i
-									        .getStringValue());
-									for (Block b : l) {
-										blockToSaxon6Node(b, builder, pool, c);
-									}
-									builder.endDocument();
-									builder.close();
-									NodeInfo doc = builder.getCurrentRoot();
-									AxisIterator elms = doc.iterateAxis(
-									        Axis.CHILD, AnyNodeTest
-									                .getInstance());
-									while (elms.next() != null) {
-										resultNodes.add(elms.current());
+									try {
+										Builder builder = context.getController()
+												.makeBuilder();
+										builder.open();
+										builder.startDocument(0);
+										List<Block> l = hl.highlight(n2i
+												.getStringValue());
+										for (Block b : l) {
+											blockToSaxon9Node(b, builder, pool, c);
+										}
+										builder.endDocument();
+										builder.close();
+										NodeInfo doc = builder.getCurrentRoot();
+										AxisIterator elms = doc.iterateAxis(
+												Axis.CHILD, AnyNodeTest
+												.getInstance());
+										while (elms.next() != null) {
+											resultNodes.add(elms.current());
+										}
+									} catch(Exception ex) {
+										logger.log(Level.SEVERE, String.format(
+												"Highligher threw unhandled error at position %s: %s", n2i.getStringValue(),
+												ex.getMessage()), ex);
+										resultNodes.add(n2i); // No highlighting, but visible at least
 									}
 								} else {
 									resultNodes.add(n2i);
