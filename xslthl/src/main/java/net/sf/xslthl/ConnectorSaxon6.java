@@ -28,6 +28,8 @@ package net.sf.xslthl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.icl.saxon.Context;
 import com.icl.saxon.expr.XPathException;
@@ -46,6 +48,11 @@ import com.icl.saxon.tree.AttributeCollection;
  * used.
  */
 public class ConnectorSaxon6 {
+	
+	/**
+	 * The logging facility
+	 */
+	private static Logger logger = Logger.getLogger("net.sf.xslthl.saxon6connector");
 
 	private static void blockToSaxon6Node(Block b, Builder builder,
 	        NamePool pool, Config config) throws Exception {
@@ -88,7 +95,7 @@ public class ConnectorSaxon6 {
 	 * @throws Exception
 	 */
 	public static NodeEnumeration highlight(Context context, String hlCode,
-	        NodeEnumeration nodes, String configFilename) throws Exception {
+			NodeEnumeration nodes, String configFilename) throws Exception {
 		try {
 			Config c = Config.getInstance(configFilename);
 			MainHighlighter hl = c.getMainHighlighter(hlCode);
@@ -96,7 +103,6 @@ public class ConnectorSaxon6 {
 			NamePool pool = context.getController().getNamePool();
 
 			List<NodeInfo> resultNodes = new ArrayList<NodeInfo>();
-
 			while (nodes.hasMoreElements()) {
 				NodeInfo ni = nodes.nextElement();
 				AxisEnumeration ae = ni.getEnumeration(Axis.CHILD, AnyNodeTest
@@ -105,19 +111,26 @@ public class ConnectorSaxon6 {
 					NodeInfo n2i = ae.nextElement();
 					if (n2i.getNodeType() == NodeInfo.TEXT) {
 						if (hl != null) {
-							Builder builder = context.getController()
-							        .makeBuilder();
-							builder.startDocument();
-							List<Block> l = hl.highlight(n2i.getStringValue());
-							for (Block b : l) {
-								blockToSaxon6Node(b, builder, pool, c);
-							}
-							builder.endDocument();
-							DocumentInfo doc = builder.getCurrentDocument();
-							NodeEnumeration elms = doc.getEnumeration(
-							        Axis.CHILD, AnyNodeTest.getInstance());
-							while (elms.hasMoreElements()) {
-								resultNodes.add(elms.nextElement());
+							try {
+								Builder builder = context.getController()
+										.makeBuilder();
+								builder.startDocument();
+								List<Block> l = hl.highlight(n2i.getStringValue());
+								for (Block b : l) {
+									blockToSaxon6Node(b, builder, pool, c);
+								}
+								builder.endDocument();
+								DocumentInfo doc = builder.getCurrentDocument();
+								NodeEnumeration elms = doc.getEnumeration(
+										Axis.CHILD, AnyNodeTest.getInstance());
+								while (elms.hasMoreElements()) {
+									resultNodes.add(elms.nextElement());
+								}
+							} catch (Exception e) {
+								logger.log(Level.SEVERE, String.format(
+								        "Highligher threw unhandled error at position %s: %s", n2i.getStringValue(),
+								        e.getMessage()), e);
+								resultNodes.add(n2i); // No highlighting, but visible at least
 							}
 						} else {
 							resultNodes.add(n2i);
