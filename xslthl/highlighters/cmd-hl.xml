@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+
+Syntax highlighting definition for 'Command Prompt' shell on Windows.
+
+xslthl - XSLT Syntax Highlighting
+http://sourceforge.net/projects/xslthl/
+Copyright (C) 2010 Mathieu Malaterre
+
+This software is provided 'as-is', without any express or implied
+warranty.  In no event will the authors be held liable for any damages
+arising from the use of this software.
+
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it
+freely, subject to the following restrictions:
+
+1. The origin of this software must not be misrepresented; you must not
+   claim that you wrote the original software. If you use this software
+   in a product, an acknowledgment in the product documentation would be
+   appreciated but is not required.
+2. Altered source versions must be plainly marked as such, and must not be
+   misrepresented as being the original software.
+3. This notice may not be removed or altered from any source distribution.
+
+-->
+<highlighters>
+	<highlighter type="oneline-comment">rem</highlighter>
+	<highlighter type="oneline-comment">REM</highlighter>
+	<highlighter type="string">
+		<string>"</string>
+		<escape>\</escape>
+	</highlighter>
+	<highlighter type="hexnumber">
+		<prefix>0x</prefix>
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="number">
+		<point>.</point>
+		<pointStarts />
+		<ignoreCase />
+	</highlighter>
+	<highlighter type="keywords">
+		<keyword>ASSOC</keyword>
+		<keyword>ATTRIB</keyword>
+		<keyword>BREAK</keyword>
+		<keyword>BCDEDIT</keyword>
+		<keyword>CACLS</keyword>
+		<keyword>CALL</keyword>
+		<keyword>CD</keyword>
+		<keyword>CHCP</keyword>
+		<keyword>CHDIR</keyword>
+		<keyword>CHKDSK</keyword>
+		<keyword>CHKNTFS</keyword>
+		<keyword>CLS</keyword>
+		<keyword>CMD</keyword>
+		<keyword>COLOR</keyword>
+		<keyword>COMP</keyword>
+		<keyword>COMPACT</keyword>
+		<keyword>CONVERT</keyword>
+		<keyword>COPY</keyword>
+		<keyword>DATE</keyword>
+		<keyword>DEL</keyword>
+		<keyword>DIR</keyword>
+		<keyword>DISKPART</keyword>
+		<keyword>DOSKEY</keyword>
+		<keyword>DRIVERQUERY</keyword>
+		<keyword>ECHO</keyword>
+		<keyword>ENDLOCAL</keyword>
+		<keyword>ERASE</keyword>
+		<keyword>EXIT</keyword>
+		<keyword>FC</keyword>
+		<keyword>FIND</keyword>
+		<keyword>FINDSTR</keyword>
+		<keyword>FOR</keyword>
+		<keyword>FORMAT</keyword>
+		<keyword>FSUTIL</keyword>
+		<keyword>FTYPE</keyword>
+		<keyword>GOTO</keyword>
+		<keyword>GPRESULT</keyword>
+		<keyword>GRAFTABL</keyword>
+		<keyword>HELP</keyword>
+		<keyword>ICACLS</keyword>
+		<keyword>IF</keyword>
+		<keyword>LABEL</keyword>
+		<keyword>MD</keyword>
+		<keyword>MKDIR</keyword>
+		<keyword>MKLINK</keyword>
+		<keyword>MODE</keyword>
+		<keyword>MORE</keyword>
+		<keyword>MOVE</keyword>
+		<keyword>OPENFILES</keyword>
+		<keyword>PATH</keyword>
+		<keyword>PAUSE</keyword>
+		<keyword>POPD</keyword>
+		<keyword>PRINT</keyword>
+		<keyword>PROMPT</keyword>
+		<keyword>PUSHD</keyword>
+		<keyword>RD</keyword>
+		<keyword>RECOVER</keyword>
+		<keyword>REM</keyword>
+		<keyword>REN</keyword>
+		<keyword>RENAME</keyword>
+		<keyword>REPLACE</keyword>
+		<keyword>RMDIR</keyword>
+		<keyword>ROBOCOPY</keyword>
+		<keyword>SET</keyword>
+		<keyword>SETLOCAL</keyword>
+		<keyword>SC</keyword>
+		<keyword>SCHTASKS</keyword>
+		<keyword>SHIFT</keyword>
+		<keyword>SHUTDOWN</keyword>
+		<keyword>SORT</keyword>
+		<keyword>START</keyword>
+		<keyword>SUBST</keyword>
+		<keyword>SYSTEMINFO</keyword>
+		<keyword>TASKLIST</keyword>
+		<keyword>TASKKILL</keyword>
+		<keyword>TIME</keyword>
+		<keyword>TITLE</keyword>
+		<keyword>TREE</keyword>
+		<keyword>TYPE</keyword>
+		<keyword>VER</keyword>
+		<keyword>VERIFY</keyword>
+		<keyword>VOL</keyword>
+		<keyword>XCOPY</keyword>
+		<keyword>WMIC</keyword>
+		<ignoreCase />
+	</highlighter>
+</highlighters>
