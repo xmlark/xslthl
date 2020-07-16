@@ -54,6 +54,7 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 	<highlighter id="sql2003" file="sql2003-hl.xml" />
 	<highlighter id="sql" file="sql2003-hl.xml" />
 	<highlighter id="xquery" file="xquery-hl.xml" />
+  <highlighter id="dtd" file="dtd-hl.xml" />
 	<highlighter id="cmd" file="cmd-hl.xml" />
 	<namespace prefix="xslthl" uri="http://xslthl.sf.net" />
 </xslthl-config>
