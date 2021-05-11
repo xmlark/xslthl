@@ -189,7 +189,7 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
         <keyword>self::</keyword>
         <keyword>descendant-or-self::</keyword>
         <keyword>following-sibling::</keyword>
-        <keyword>folowing::</keyword>
+        <keyword>following::</keyword>
         <keyword>parent::</keyword>
         <keyword>ancestor::</keyword>
         <keyword>preceding::</keyword>
