@@ -48,13 +48,27 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
         <point>.</point>
     </highlighter>
     <highlighter type="keywords">
+	<beginChars>&lt;</beginChars>
+	<partChars>&lt;!</partChars>
+        <keyword>&lt;!ELEMENT</keyword>
+        <keyword>&lt;!ATTLIST</keyword>
+        <keyword>&lt;!ENTITY</keyword>
+        <keyword>&lt;!NOTATION</keyword>
+	<style>decl</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Declaration closing delimiter. -->
+	 <pattern>[>]</pattern>
+	 <style>decl</style>
+    </highlighter>
+    <highlighter type="keywords">
 	<beginChars>#</beginChars>
-        <keyword>ELEMENT</keyword>
-        <keyword>ATTLIST</keyword>
-        <keyword>ENTITY</keyword>
+	<partChars>#</partChars>
         <keyword>EMPTY</keyword>
         <keyword>ANY</keyword>
         <keyword>#PCDATA</keyword>
+    </highlighter>
+    <highlighter type="keywords">
         <keyword>CDATA</keyword>
         <keyword>ID</keyword>
         <keyword>IDREF</keyword>
@@ -63,15 +77,49 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
         <keyword>ENTITIES</keyword>
         <keyword>NMTOKEN</keyword>
         <keyword>NMTOKENS</keyword>
-        <keyword>NOTATION</keyword>
+	<style>attributetype</style>
+    </highlighter>
+    <highlighter type="keywords">
+	<beginChars>#</beginChars>
+	<partChars>#</partChars>
         <keyword>#REQUIRED</keyword>
         <keyword>#IMPLIED</keyword>
         <keyword>#FIXED</keyword>
+	<style>attributedefault</style>
     </highlighter>
     <highlighter type="regex">
-         <!-- Parameter entity -->
-	 <pattern>%([^; ]+);</pattern>
+         <!-- Element, entity, or notation name. -->
+	 <!-- '(?<...)' lookbehind needs a known length, so limit
+	      white-space length with '\s{1,10}'. -->
+	 <pattern>(?&lt;=&lt;!(ELEMENT|ATTLIST|ENTITY( %)?|NOTATION)\s{1,10})([-_:\w]+)</pattern>
+	 <style>name</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Attribute name. -->
+	 <!-- '(?<...)' lookbehind needs a known length, so limit
+	      white-space and element name lengths. -->
+	 <pattern>(?&lt;=&lt;!ATTLIST\s{1,10}[-_:\w]{1,30}\s{1,10})([-_:\w]+)</pattern>
 	 <style>attribute</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Parameter entity. -->
+	 <pattern>%([-_:\w]+);</pattern>
+	 <style>parameterentity</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Parameter entity declaration. -->
+	 <pattern>[%]</pattern>
+	 <style>parameterentity</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Occurrence indicator. -->
+	 <pattern>[?*+]</pattern>
+	 <style>occurrence</style>
+    </highlighter>
+    <highlighter type="regex">
+         <!-- Delimiter. -->
+	 <pattern>[(|)]</pattern>
+	 <style>delimiter</style>
     </highlighter>
     <highlighter type="keywords">
         <style>tag</style>
