@@ -48,11 +48,12 @@ import net.sf.saxon.type.Type;
  * connectors with the older Saxon library.
  */
 public class ConnectorSaxonEE {
-	
+
 	/**
 	 * The logging facility
 	 */
-	private static Logger logger = Logger.getLogger("net.sf.xslthl.saxon9eeconnector");
+	private static Logger logger = Logger
+	        .getLogger("net.sf.xslthl.saxon9eeconnector");
 
 	private static void blockToSaxon9Node(Block b, Builder builder,
 	        Config config) throws Exception {
@@ -60,12 +61,12 @@ public class ConnectorSaxonEE {
 			// int elemId = pool.allocate(config.prefix, config.uri,
 			// ((StyledBlock) b).getStyle());
 
-// new FingerprintedQName(config.prefix, config.uri, ((StyledBlock)
+			// new FingerprintedQName(config.prefix, config.uri, ((StyledBlock)
 			// b).getStyle())
 			Class fpQnameClazz = Class
 			        .forName("net.sf.saxon.om.FingerprintedQName");
-			Constructor constructor = fpQnameClazz.getConstructor(new Class[] {
-			        String.class, String.class, String.class });
+			Constructor constructor = fpQnameClazz.getConstructor(
+			        new Class[] { String.class, String.class, String.class });
 			Object fpQname = constructor.newInstance(new Object[] {
 			        config.prefix, config.uri, ((StyledBlock) b).getStyle() });
 			startElement(builder, fpQname);
@@ -76,61 +77,119 @@ public class ConnectorSaxonEE {
 		}
 	}
 
-	private static void startElement(Builder builder, Object fpQname) throws Exception{
-		try{
+	private static void startElement(Builder builder, Object fpQname)
+	        throws Exception {
+		try {
 			// builder.startElement(fpQname, AnyType.getInstance(), 0, 0);
-			Method startElement = builder.getClass().getMethod(
-					"startElement",
-					new Class[] { Class.forName("net.sf.saxon.om.NodeName"),
-							net.sf.saxon.type.SchemaType.class, int.class,
-							int.class });
+			Method startElement = builder.getClass().getMethod("startElement",
+			        new Class[] { Class.forName("net.sf.saxon.om.NodeName"),
+			                net.sf.saxon.type.SchemaType.class, int.class,
+			                int.class });
 			startElement.invoke(builder,
-					new Object[] { fpQname, AnyType.getInstance(), 0, 0 });
-		} catch(Exception ex){
-			//Maybe Saxon 9.7.11 or newer
-			//public void startElement(/*@NotNull*/ NodeName elemName, SchemaType type, Location location, int properties) throws XPathException {
-			Method startElement = builder.getClass().getMethod(
-					"startElement",
-					new Class[] { Class.forName("net.sf.saxon.om.NodeName"),
-							net.sf.saxon.type.SchemaType.class, Class.forName("net.sf.saxon.expr.parser.Location"),
-							int.class });
-			startElement.invoke(builder,
-					new Object[] { fpQname, AnyType.getInstance(), createFakeLocation(), 0 });
-		}
-	}
-	
-	private static void outputCharacters(Builder builder, String text) throws Exception{
-		Method characters = null;
-		try{
-			characters = builder.getClass().getMethod("characters", new Class[]{String.class, int.class, int.class});
-			characters.invoke(builder, new Object[]{text, 0, 0});
-		} catch(Exception ex){
-			//Maybe Saxon 9.7.11 or newer
-			characters = builder.getClass().getMethod("characters", new Class[]{CharSequence.class, Class.forName("net.sf.saxon.expr.parser.Location"), int.class});
-			characters.invoke(builder, new Object[]{text, createFakeLocation(), 0});
-		}
-	}
-	
-	private static Object createFakeLocation() throws IllegalArgumentException, ClassNotFoundException{
-		return Proxy.newProxyInstance(ConnectorSaxonEE.class.getClassLoader(), 
-				new Class[]{Class.forName("net.sf.saxon.expr.parser.Location")}, new InvocationHandler() {
-			@Override
-			public Object invoke(Object proxy, Method method, Object[] args)
-					throws Throwable {
-				if("saveLocation".equals(method.getName())){
-					return proxy;
-				} else if("getSystemId".equals(method.getName())
-						|| "getPublicId".equals(method.getName())){
-					return null;
-				} else if ("getLineNumber".equals(method.getName())
-						|| "getColumnNumber".equals(method.getName())){
-					return Integer.valueOf(0);
-				}
-				return null;
+			        new Object[] { fpQname, AnyType.getInstance(), 0, 0 });
+		} catch (Exception ex) {
+			try {
+				// Maybe Saxon 9.7.11 or newer
+				// public void startElement(/*@NotNull*/ NodeName elemName,
+				// SchemaType type, Location location, int properties) throws
+				// XPathException {
+				Method startElement = builder.getClass().getMethod(
+				        "startElement",
+				        new Class[] { Class.forName("net.sf.saxon.om.NodeName"),
+				                net.sf.saxon.type.SchemaType.class,
+				                Class.forName(
+				                        "net.sf.saxon.expr.parser.Location"),
+				                int.class });
+				startElement.invoke(builder, new Object[] { fpQname,
+				        AnyType.getInstance(), createFakeLocation(false), 0 });
+			} catch (Exception ex2) {
+				// Maybe Saxon 10 or newer
+				Method startElement = builder.getClass().getMethod(
+				        "startElement",
+				        new Class[] { Class.forName("net.sf.saxon.om.NodeName"),
+				                net.sf.saxon.type.SchemaType.class,
+				                Class.forName("net.sf.saxon.om.AttributeMap"),
+				                Class.forName("net.sf.saxon.om.NamespaceMap"),
+				                Class.forName("net.sf.saxon.s9api.Location"),
+				                int.class });
+				// net.sf.saxon.om.EmptyAttributeMap.EmptyAttributeMap()
+				Class emptyAttrClazz = Class
+				        .forName("net.sf.saxon.om.EmptyAttributeMap");
+				Method attrsInstance = emptyAttrClazz.getMethod("getInstance",
+				        new Class[0]);
+
+				Class emptyNMClazz = Class
+				        .forName("net.sf.saxon.om.NamespaceMap");
+				Method mapInstance = emptyNMClazz.getMethod("emptyMap",
+				        new Class[0]);
+
+				startElement.invoke(builder,
+				        new Object[] { fpQname, AnyType.getInstance(),
+				                attrsInstance.invoke(null, new Object[0]),
+				                mapInstance.invoke(null, new Object[0]),
+				                createFakeLocation(true), 0 });
 			}
-		});
+		}
 	}
-	
+
+	private static void outputCharacters(Builder builder, String text)
+	        throws Exception {
+		Method characters = null;
+		try {
+			characters = builder.getClass().getMethod("characters",
+			        new Class[] { String.class, int.class, int.class });
+			characters.invoke(builder, new Object[] { text, 0, 0 });
+		} catch (Exception ex) {
+			try {
+				// Maybe Saxon 9.7.11 or newer
+				characters = builder.getClass()
+				        .getMethod("characters",
+				                new Class[] { CharSequence.class, Class.forName(
+				                        "net.sf.saxon.expr.parser.Location"),
+				                        int.class });
+				characters.invoke(builder,
+				        new Object[] { text, createFakeLocation(false), 0 });
+			} catch (Exception ex2) {
+				// Maybe Saxon 10.x and newer
+				characters = builder.getClass().getMethod("characters",
+				        new Class[] { CharSequence.class,
+				                Class.forName("net.sf.saxon.s9api.Location"),
+				                int.class });
+				characters.invoke(builder,
+				        new Object[] { text, createFakeLocation(true), 0 });
+			}
+		}
+	}
+
+	private static Object createFakeLocation(boolean saxon10OrNewer)
+	        throws IllegalArgumentException, ClassNotFoundException {
+		return Proxy
+		        .newProxyInstance(ConnectorSaxonEE.class.getClassLoader(),
+		                new Class[] { Class.forName(saxon10OrNewer
+		                        ? "net.sf.saxon.s9api.Location"
+		                        : "net.sf.saxon.expr.parser.Location") },
+		                new InvocationHandler() {
+			                @Override
+			                public Object invoke(Object proxy, Method method,
+			                        Object[] args) throws Throwable {
+				                if ("saveLocation".equals(method.getName())) {
+					                return proxy;
+				                } else if ("getSystemId"
+				                        .equals(method.getName())
+				                        || "getPublicId"
+				                                .equals(method.getName())) {
+					                return null;
+				                } else if ("getLineNumber"
+				                        .equals(method.getName())
+				                        || "getColumnNumber"
+				                                .equals(method.getName())) {
+					                return Integer.valueOf(0);
+				                }
+				                return null;
+			                }
+		                });
+	}
+
 	/**
 	 * Highlight the nodes using the standard configuration file
 	 * 
@@ -163,15 +222,20 @@ public class ConnectorSaxonEE {
 			MainHighlighter hl = c.getMainHighlighter(hlCode);
 
 			// Axis info obtained via Java reflection.
-			byte childType = (Byte) Class.forName("net.sf.saxon.om.AxisInfo")
+			Object childType = Class.forName("net.sf.saxon.om.AxisInfo")
 			        .getField("CHILD").get(null);
-			Method iterateAxis = Class
-			        .forName("net.sf.saxon.om.NodeInfo")
-			        .getMethod(
-			                "iterateAxis",
-			                new Class[] {
-			                        byte.class,
-			                        Class.forName("net.sf.saxon.pattern.NodeTest") });
+			Method iterateAxis = null;
+			try {
+				iterateAxis = Class.forName("net.sf.saxon.om.NodeInfo")
+				        .getMethod("iterateAxis",
+				                new Class[] { byte.class, Class.forName(
+				                        "net.sf.saxon.pattern.NodeTest") });
+			} catch (NoSuchMethodException t) {
+				// Try with Saxon 10
+				iterateAxis = Class.forName("net.sf.saxon.om.NodeInfo")
+				        .getMethod("iterateAxis", new Class[] { int.class, Class
+				                .forName("java.util.function.Predicate") });
+			}
 			Class axisIterClazz = Class
 			        .forName("net.sf.saxon.tree.iter.AxisIterator");
 			Method next = axisIterClazz.getMethod("next", new Class[0]);
@@ -182,12 +246,11 @@ public class ConnectorSaxonEE {
 				// Item itm = seq.current();
 				if (itm instanceof NodeInfo) {
 					NodeInfo ni = (NodeInfo) itm;
-					SequenceIterator ae = (SequenceIterator) iterateAxis
-					        .invoke(ni,
-					                new Object[] {
-					                        childType,
-					                        net.sf.saxon.pattern.AnyNodeTest
-					                                .getInstance() });
+					SequenceIterator ae = (SequenceIterator) iterateAxis.invoke(
+					        ni,
+					        new Object[] { childType,
+					                net.sf.saxon.pattern.AnyNodeTest
+					                        .getInstance() });
 					// SequenceIterator ae = ni.iterateAxis(childType,
 					// net.sf.saxon.pattern.AnyNodeTest.getInstance());
 					Item itm2 = null;
@@ -197,12 +260,12 @@ public class ConnectorSaxonEE {
 							if (n2i.getNodeKind() == Type.TEXT) {
 								if (hl != null) {
 									try {
-										Builder builder = context.getController()
-												.makeBuilder();
+										Builder builder = context
+										        .getController().makeBuilder();
 										builder.open();
 										builder.startDocument(0);
-										List<Block> l = hl.highlight(n2i
-												.getStringValue());
+										List<Block> l = hl.highlight(
+										        n2i.getStringValue());
 										for (Block b : l) {
 											blockToSaxon9Node(b, builder, c);
 										}
@@ -210,24 +273,26 @@ public class ConnectorSaxonEE {
 										builder.close();
 										NodeInfo doc = builder.getCurrentRoot();
 
-										Object elms = iterateAxis
-												.invoke(doc,
-														new Object[] {
-																childType,
-																net.sf.saxon.pattern.AnyNodeTest
-																.getInstance() });
+										Object elms = iterateAxis.invoke(doc,
+										        new Object[] { childType,
+										                net.sf.saxon.pattern.AnyNodeTest
+										                        .getInstance() });
 										// Object elms =
-												// doc.iterateAxis(childType,net.sf.saxon.pattern.AnyNodeTest);
+										// doc.iterateAxis(childType,net.sf.saxon.pattern.AnyNodeTest);
 										Item crt = null;
 										while ((crt = (Item) next.invoke(elms,
-												new Object[0])) != null) {
+										        new Object[0])) != null) {
 											resultNodes.add(crt);
 										}
-									} catch(Exception ex) {
+									} catch (Exception ex) {
 										logger.log(Level.SEVERE, String.format(
-												"Highligher threw unhandled error at position %s: %s", n2i.getStringValue(),
-												ex.getMessage()), ex);
-										resultNodes.add(n2i); // No highlighting, but visible at least
+										        "Highligher threw unhandled error at position %s: %s",
+										        n2i.getStringValue(),
+										        ex.getMessage()), ex);
+										resultNodes.add(n2i); // No
+										                      // highlighting,
+										                      // but visible at
+										                      // least
 									}
 								} else {
 									resultNodes.add(n2i);
