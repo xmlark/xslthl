@@ -56,5 +56,7 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 	<highlighter id="xquery" file="xquery-hl.xml" />
   <highlighter id="dtd" file="dtd-hl.xml" />
 	<highlighter id="cmd" file="cmd-hl.xml" />
+    <highlighter id="yaml" file="yaml.xml" />
+	<highlighter id="yml" file="yaml.xml" />
 	<namespace prefix="xslthl" uri="http://xslthl.sf.net" />
 </xslthl-config>
