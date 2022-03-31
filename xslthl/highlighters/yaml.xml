@@ -31,15 +31,13 @@ Radu Coravu <radu_coravu@sync.ro>
     <highlighter type="string">
         <string>"</string>
         <escape>\</escape>
-        <char-after-special-quoted-string>:</char-after-special-quoted-string>
     </highlighter>
     <highlighter type="string">
         <string>'</string>
         <escape>\</escape>
     </highlighter>
     <highlighter type="regex">
-        <pattern>^(.+?)(?::)</pattern>
+        <pattern>[^:\-\[\]\{\}\,\s]*(?=:)</pattern>
         <style>keyword</style>
-        <flags>MULTILINE</flags>
     </highlighter>
 </highlighters>
