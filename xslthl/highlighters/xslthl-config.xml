@@ -58,5 +58,6 @@ Michiel Hendriks <elmuerte at users.sourceforge.net>
 	<highlighter id="cmd" file="cmd-hl.xml" />
     <highlighter id="yaml" file="yaml.xml" />
 	<highlighter id="yml" file="yaml.xml" />
+	<highlighter id="powershell" file="powershell-hl.xml" />
 	<namespace prefix="xslthl" uri="http://xslthl.sf.net" />
 </xslthl-config>
