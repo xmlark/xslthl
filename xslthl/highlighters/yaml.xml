@@ -37,7 +37,7 @@ Radu Coravu <radu_coravu@sync.ro>
         <escape>\</escape>
     </highlighter>
     <highlighter type="regex">
-        <pattern>[^:\-\[\]\{\}\,\s]*(?=:)</pattern>
+        <pattern>[^:\[\]\{\}\,\s]*(?=:)</pattern>
         <style>keyword</style>
     </highlighter>
 </highlighters>
