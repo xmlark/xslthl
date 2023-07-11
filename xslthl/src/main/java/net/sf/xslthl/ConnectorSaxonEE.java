@@ -63,12 +63,29 @@ public class ConnectorSaxonEE {
 
 			// new FingerprintedQName(config.prefix, config.uri, ((StyledBlock)
 			// b).getStyle())
-			Class fpQnameClazz = Class
-			        .forName("net.sf.saxon.om.FingerprintedQName");
-			Constructor constructor = fpQnameClazz.getConstructor(
-			        new Class[] { String.class, String.class, String.class });
-			Object fpQname = constructor.newInstance(new Object[] {
-			        config.prefix, config.uri, ((StyledBlock) b).getStyle() });
+			Object fpQname = null;
+			try {
+				Class fpQnameClazz = Class
+				        .forName("net.sf.saxon.om.FingerprintedQName");
+				Constructor constructor = fpQnameClazz
+				        .getConstructor(new Class[] { String.class,
+				                String.class, String.class });
+				fpQname = constructor.newInstance(new Object[] { config.prefix,
+				        config.uri, ((StyledBlock) b).getStyle() });
+			} catch (Exception ex) {
+				// Saxon 12.x and newer
+				Class fpQnameClazz = Class
+				        .forName("net.sf.saxon.om.FingerprintedQName");
+				Class nsURIClass = Class
+				        .forName("net.sf.saxon.om.NamespaceUri");
+				Method of = nsURIClass.getMethod("of",
+				        new Class[] { String.class });
+				Constructor constructor = fpQnameClazz.getConstructor(
+				        new Class[] { String.class, nsURIClass, String.class });
+				fpQname = constructor.newInstance(new Object[] { config.prefix,
+				        of.invoke(null, config.uri),
+				        ((StyledBlock) b).getStyle() });
+			}
 			startElement(builder, fpQname);
 			outputCharacters(builder, b.getText());
 			builder.endElement();
@@ -150,13 +167,33 @@ public class ConnectorSaxonEE {
 				characters.invoke(builder,
 				        new Object[] { text, createFakeLocation(false), 0 });
 			} catch (Exception ex2) {
-				// Maybe Saxon 10.x and newer
-				characters = builder.getClass().getMethod("characters",
-				        new Class[] { CharSequence.class,
-				                Class.forName("net.sf.saxon.s9api.Location"),
-				                int.class });
-				characters.invoke(builder,
-				        new Object[] { text, createFakeLocation(true), 0 });
+				try {
+					// Maybe Saxon 10.x and newer
+					characters = builder.getClass().getMethod("characters",
+					        new Class[] { CharSequence.class,
+					                Class.forName(
+					                        "net.sf.saxon.s9api.Location"),
+					                int.class });
+					characters.invoke(builder,
+					        new Object[] { text, createFakeLocation(true), 0 });
+				} catch (Exception ex3) {
+					// Maybe Saxon 12.x and newer
+					Class stClass = Class
+					        .forName("net.sf.saxon.str.StringTool");
+					Method fromCS = stClass.getMethod("fromCharSequence",
+					        new Class[] { CharSequence.class });
+					Object unicodeObj = fromCS.invoke(null,
+					        new Object[] { text });
+					Class unicodeStrClass = Class
+					        .forName("net.sf.saxon.str.UnicodeString");
+					characters = builder.getClass().getMethod("characters",
+					        new Class[] { unicodeStrClass,
+					                Class.forName(
+					                        "net.sf.saxon.s9api.Location"),
+					                int.class });
+					characters.invoke(builder, new Object[] { unicodeObj,
+					        createFakeLocation(true), 0 });
+				}
 			}
 		}
 	}
@@ -227,14 +264,11 @@ public class ConnectorSaxonEE {
 			Method iterateAxis = null;
 			try {
 				iterateAxis = Class.forName("net.sf.saxon.om.NodeInfo")
-				        .getMethod("iterateAxis",
-				                new Class[] { byte.class, Class.forName(
-				                        "net.sf.saxon.pattern.NodeTest") });
+				        .getMethod("iterateAxis", new Class[] { byte.class });
 			} catch (NoSuchMethodException t) {
 				// Try with Saxon 10
 				iterateAxis = Class.forName("net.sf.saxon.om.NodeInfo")
-				        .getMethod("iterateAxis", new Class[] { int.class, Class
-				                .forName("java.util.function.Predicate") });
+				        .getMethod("iterateAxis", new Class[] { int.class });
 			}
 			Class axisIterClazz = Class
 			        .forName("net.sf.saxon.tree.iter.AxisIterator");
@@ -246,11 +280,8 @@ public class ConnectorSaxonEE {
 				// Item itm = seq.current();
 				if (itm instanceof NodeInfo) {
 					NodeInfo ni = (NodeInfo) itm;
-					SequenceIterator ae = (SequenceIterator) iterateAxis.invoke(
-					        ni,
-					        new Object[] { childType,
-					                net.sf.saxon.pattern.AnyNodeTest
-					                        .getInstance() });
+					SequenceIterator ae = (SequenceIterator) iterateAxis
+					        .invoke(ni, new Object[] { childType });
 					// SequenceIterator ae = ni.iterateAxis(childType,
 					// net.sf.saxon.pattern.AnyNodeTest.getInstance());
 					Item itm2 = null;
@@ -274,9 +305,7 @@ public class ConnectorSaxonEE {
 										NodeInfo doc = builder.getCurrentRoot();
 
 										Object elms = iterateAxis.invoke(doc,
-										        new Object[] { childType,
-										                net.sf.saxon.pattern.AnyNodeTest
-										                        .getInstance() });
+										        new Object[] { childType });
 										// Object elms =
 										// doc.iterateAxis(childType,net.sf.saxon.pattern.AnyNodeTest);
 										Item crt = null;
@@ -308,12 +337,23 @@ public class ConnectorSaxonEE {
 					resultNodes.add(itm);
 				}
 			}
-			Class lstIterClassName = Class
-			        .forName("net.sf.saxon.tree.iter.ListIterator");
-			Constructor constructor = lstIterClassName
-			        .getConstructor(new Class[] { List.class });
-			return (SequenceIterator) constructor
-			        .newInstance(new Object[] { resultNodes });
+			try {
+				Class lstIterClassName = Class
+				        .forName("net.sf.saxon.tree.iter.ListIterator");
+				Constructor constructor = lstIterClassName
+				        .getConstructor(new Class[] { List.class });
+				return (SequenceIterator) constructor
+				        .newInstance(new Object[] { resultNodes });
+			} catch (Exception ex) {
+				// Saxon 12.x and newer
+				// ListIterator it = new ListIterator.Of<>(nodes);
+				Class ofClass = Class
+				        .forName("net.sf.saxon.tree.iter.ListIterator$Of");
+				Constructor ofConstructor = ofClass
+				        .getConstructor(new Class[] { List.class });
+				return (SequenceIterator) ofConstructor
+				        .newInstance(new Object[] { resultNodes });
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 			return null;
