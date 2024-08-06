@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<highlighters>
+  <highlighter type="oneline-comment">
+    <start>///</start>
+    <style>doccomment</style>
+  </highlighter>
+  <highlighter type="multiline-comment">
+    <start>(*</start>
+    <end>*)</end>
+  </highlighter>
+  <highlighter type="oneline-comment">//</highlighter>
+  <highlighter type="annotation">
+    <start>[&lt;</start>
+    <end>&gt;]</end>
+    <valueStart>(</valueStart>
+    <valueEnd>)</valueEnd>
+  </highlighter>
+  <highlighter type="oneline-comment">
+    <start>#</start>
+    <lineBreakEscape>\</lineBreakEscape>
+    <style>directive</style>
+    <solitary/>
+  </highlighter>
+  <highlighter type="string">
+    <string>@"</string>
+    <endString>"</endString>
+    <escape>\</escape>
+    <spanNewLines />
+  </highlighter>
+  <highlighter type="string">
+    <string>"</string>
+    <escape>\</escape>
+  </highlighter>
+  <highlighter type="string">
+    <string>'</string>
+    <escape>\</escape>
+  </highlighter>
+  <highlighter type="hexnumber">
+    <prefix>0x</prefix>
+    <suffix>ul</suffix>
+    <suffix>lu</suffix>
+    <suffix>u</suffix>
+    <suffix>l</suffix>
+    <ignoreCase />
+  </highlighter>
+  <highlighter type="number">
+    <point>.</point>
+    <pointStarts />
+    <exponent>e</exponent>
+    <suffix>ul</suffix>
+    <suffix>lu</suffix>
+    <suffix>u</suffix>
+    <suffix>f</suffix>
+    <suffix>d</suffix>
+    <suffix>m</suffix>
+    <suffix>l</suffix>
+    <ignoreCase />
+  </highlighter>
+  <highlighter type="keywords">
+    <keyword>abstract</keyword>
+    <keyword>and</keyword>
+    <keyword>as</keyword>
+    <keyword>assert</keyword>
+    <keyword>base</keyword>
+    <keyword>begin</keyword>
+    <keyword>class</keyword>
+    <keyword>default</keyword>
+    <keyword>delegate</keyword>
+    <keyword>do</keyword>
+    <keyword>done</keyword>
+    <keyword>downcast</keyword>
+    <keyword>downto</keyword>
+    <keyword>elif</keyword>
+    <keyword>else</keyword>
+    <keyword>end</keyword>
+    <keyword>exception</keyword>
+    <keyword>extern</keyword>
+    <keyword>false</keyword>
+    <keyword>finally</keyword>
+    <keyword>for</keyword>
+    <keyword>fun</keyword>
+    <keyword>function</keyword>
+    <keyword>global</keyword>
+    <keyword>if</keyword>
+    <keyword>in</keyword>
+    <keyword>inherit</keyword>
+    <keyword>inline</keyword>
+    <keyword>interface</keyword>
+    <keyword>internal</keyword>
+    <keyword>lazy</keyword>
+    <keyword>let</keyword>
+    <keyword>match</keyword>
+    <keyword>member</keyword>
+    <keyword>module</keyword>
+    <keyword>mutable</keyword>
+    <keyword>namespace</keyword>
+    <keyword>new</keyword>
+    <keyword>not</keyword>
+    <keyword>null</keyword>
+    <keyword>of</keyword>
+    <keyword>open</keyword>
+    <keyword>or</keyword>
+    <keyword>override</keyword>
+    <keyword>private</keyword>
+    <keyword>public</keyword>
+    <keyword>rec</keyword>
+    <keyword>return</keyword>
+    <keyword>static</keyword>
+    <keyword>struct</keyword>
+    <keyword>then</keyword>
+    <keyword>to</keyword>
+    <keyword>true</keyword>
+    <keyword>try</keyword>
+    <keyword>type</keyword>
+    <keyword>upcast</keyword>
+    <keyword>use</keyword>
+    <keyword>val</keyword>
+    <keyword>void</keyword>
+    <keyword>when</keyword>
+    <keyword>with</keyword>
+    <keyword>yield</keyword>
+  </highlighter>
+</highlighters>
